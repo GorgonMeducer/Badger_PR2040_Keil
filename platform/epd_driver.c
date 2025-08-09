@@ -39,12 +39,55 @@
 /*============================ MACROFIED FUNCTIONS ===========================*/
 
 #define SEND_LUT(__CMD, __LUT)                                                  \
-    epd_send_cmd(__CMD);                                                        \
-    for(uint32_t wCount=0; wCount < dimof(__LUT); wCount++) {                   \
-        epd_send_data(__LUT[wCount]);                                           \
-    }
+    do {                                                                        \
+        epd_send_cmd(__CMD);                                                    \
+        epd_send_data((uint8_t *)(__LUT), sizeof(__LUT));                       \
+    } while(0)
+
 
 /*============================ TYPES =========================================*/
+
+enum {
+    PANEL_SETTING                             = 0x00,
+    POWER_SETTING                             = 0x01,
+    POWER_OFF                                 = 0x02,
+    POWER_OFF_SEQUENCE_SETTING                = 0x03,
+    POWER_ON                                  = 0x04,
+    POWER_ON_MEASURE                          = 0x05,
+    BOOSTER_SOFT_START                        = 0x06,
+    DEEP_SLEEP                                = 0x07,
+    DATA_START_TRANSMISSION_1                 = 0x10,
+    DATA_STOP                                 = 0x11,
+    DISPLAY_REFRESH                           = 0x12,
+    DATA_START_TRANSMISSION_2                 = 0x13,
+    LUT_VCOM                                  = 0x20,
+    LUT_WW                                    = 0x21,
+    LUT_BW                                    = 0x22,
+    LUT_WB                                    = 0x23,
+    LUT_BB                                    = 0x24,
+    PLL_CONTROL                               = 0x30,
+    TEMPERATURE_SENSOR_COMMAND                = 0x40,
+    TEMPERATURE_SENSOR_CALIBRATION            = 0x41,
+    TEMPERATURE_SENSOR_WRITE                  = 0x42,
+    TEMPERATURE_SENSOR_READ                   = 0x43,
+    VCOM_AND_DATA_INTERVAL_SETTING            = 0x50,
+    LOW_POWER_DETECTION                       = 0x51,
+    TCON_SETTING                              = 0x60,
+    TCON_RESOLUTION                           = 0x61,
+    SOURCE_AND_GATE_START_SETTING             = 0x62,
+    GET_STATUS                                = 0x71,
+    AUTO_MEASURE_VCOM                         = 0x80,
+    VCOM_VALUE                                = 0x81,
+    VCM_DC_SETTING_REGISTER                   = 0x82,
+    PARTIAL_WINDOW                            = 0x90,
+    PARTIAL_IN                                = 0x91,
+    PARTIAL_OUT                               = 0x92,
+    PROGRAM_MODE                              = 0xA0,
+    ACTIVE_PROGRAMMING                        = 0xA1,
+    READ_OTP                                  = 0xA2,
+    POWER_SAVING                              = 0xE3,
+};
+
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 
@@ -109,8 +152,8 @@ const unsigned char epd_lut_vcom1[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    ,0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00,
 };
 const unsigned char epd_lut_ww1[] = {
     0x00, 0x19, 0x01, 0x00, 0x00, 0x01,
@@ -149,6 +192,7 @@ const unsigned char epd_lut_bb1[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
+
 enum {
 
     EPD_CS_PIN    = 17,
@@ -171,6 +215,12 @@ void epd_spi_write_byte(uint8_t Value)
     spi_write_blocking((spi_inst_t *)SPI_PORT, &Value, 1);
 }
 
+void epd_spi_write(uint8_t *pchBuff, size_t tSize)
+{
+    spi_write_blocking((spi_inst_t *)SPI_PORT, pchBuff, tSize);
+}
+
+
 static void epd_screen_reset(void)
 {
     gpio_put(EPD_RST_PIN, 1);
@@ -189,7 +239,7 @@ static void epd_send_cmd(uint8_t Reg)
     gpio_put(EPD_CS_PIN, 1);
 }
 
-static void epd_send_data(uint8_t Data)
+static void epd_send_byte(uint8_t Data)
 {
     gpio_put(EPD_DC_PIN, 1);
     gpio_put(EPD_CS_PIN, 0);
@@ -197,11 +247,19 @@ static void epd_send_data(uint8_t Data)
     gpio_put(EPD_CS_PIN, 1);
 }
 
+static void epd_send_data(uint8_t *pchBuff, size_t tSize)
+{
+    gpio_put(EPD_DC_PIN, 1);
+    gpio_put(EPD_CS_PIN, 0);
+    epd_spi_write(pchBuff, tSize);
+    gpio_put(EPD_CS_PIN, 1);
+}
+
 __STATIC_INLINE 
 void epd_read_busy(void)
 {
     do {
-        epd_send_cmd(0x71);
+        epd_send_cmd(GET_STATUS);
     } while(!(gpio_get(EPD_BUSY_PIN) & 0x01));
 }
 
@@ -232,62 +290,62 @@ void epd_screen_init(void)
 
     epd_screen_reset();
 
-    epd_send_cmd(0x01);         //! Power Settings
-    epd_send_data(0x03);
-    epd_send_data(0x00);
-    epd_send_data(0x2b);
-    epd_send_data(0x2b);
-    epd_send_data(0x03);
+    epd_send_cmd(POWER_SETTING);
+    epd_send_byte(0x03);
+    epd_send_byte(0x00);
+    epd_send_byte(0x2b);
+    epd_send_byte(0x2b);
+    epd_send_byte(0x03);
 
-    epd_send_cmd(0x06);         //! boost soft start
-    epd_send_data(0x17);        //A
-    epd_send_data(0x17);        //B
-    epd_send_data(0x17);        //C
+    epd_send_cmd(BOOSTER_SOFT_START);
+    epd_send_byte(0x17);        //A
+    epd_send_byte(0x17);        //B
+    epd_send_byte(0x17);        //C
 
-    epd_send_cmd(0x04);
+    epd_send_cmd(POWER_ON);
     epd_read_busy();
 
-    epd_send_cmd(0x00);         //panel setting
-    epd_send_data(0xbf);        //128x296
-    epd_send_data(0x0e);        //VCOM to 0V fast
+    epd_send_cmd(PANEL_SETTING);
+    epd_send_byte(0xbf);        //128x296
+    epd_send_byte(0x0e);        //VCOM to 0V fast
 
-    epd_send_cmd(0x30);         //PLL setting
-    epd_send_data(0x3a);        // 3a 100HZ   29 150Hz 39 200HZ 31 171HZ
+    epd_send_cmd(PLL_CONTROL);
+    epd_send_byte(0x3a);        // 3a 100HZ   29 150Hz 39 200HZ 31 171HZ
 
-    epd_send_cmd(0x61);
-    epd_send_data(EPD_SCREEN_WIDTH);                                            //!< width
-    epd_send_data((EPD_SCREEN_HEIGHT >> 8) & 0xff);                             //!< height high byte
-    epd_send_data(EPD_SCREEN_HEIGHT & 0xff);                                    //!< height low byte
+    epd_send_cmd(TCON_RESOLUTION);
+    epd_send_byte(EPD_SCREEN_WIDTH);                                            //!< width
+    epd_send_byte((EPD_SCREEN_HEIGHT >> 8) & 0xff);                             //!< height high byte
+    epd_send_byte(EPD_SCREEN_HEIGHT & 0xff);                                    //!< height low byte
 
-    epd_send_cmd(0x82);         //vcom_DC setting
-    epd_send_data(0x28);
+    epd_send_cmd(VCM_DC_SETTING_REGISTER);
+    epd_send_byte(0x28);
 }
 
 static void epd_set_partial_refresh_mode(void)
 {
-    epd_send_cmd(0x82);
-    epd_send_data(0x00);
-    epd_send_cmd(0x50);
-    epd_send_data(0xb7);
+    epd_send_cmd(VCM_DC_SETTING_REGISTER);
+    epd_send_byte(0x00);
+    epd_send_cmd(VCOM_AND_DATA_INTERVAL_SETTING);
+    epd_send_byte(0xb7);
 
     
-    SEND_LUT(0x20, epd_lut_vcom1);
-    SEND_LUT(0x21, epd_lut_ww1);
-    SEND_LUT(0x22, epd_lut_bw1);
-    SEND_LUT(0x23, epd_lut_wb1);
-    SEND_LUT(0x24, epd_lut_bb1);
+    SEND_LUT(LUT_VCOM,  epd_lut_vcom1);
+    SEND_LUT(LUT_WW,    epd_lut_ww1);
+    SEND_LUT(LUT_BW,    epd_lut_bw1);
+    SEND_LUT(LUT_WB,    epd_lut_wb1);
+    SEND_LUT(LUT_BB,    epd_lut_bb1);
 }
 
 static void epd_set_full_refresh_mode(void)
 {
-    epd_send_cmd(0x50);
-    epd_send_data(0xb7);
+    epd_send_cmd(VCOM_AND_DATA_INTERVAL_SETTING);
+    epd_send_byte(0xb7);
 
-    SEND_LUT(0x20, epd_lut_vcom_dc);
-    SEND_LUT(0x21, epd_lut_ww);
-    SEND_LUT(0x22, epd_lut_bw);
-    SEND_LUT(0x23, epd_lut_wb);
-    SEND_LUT(0x24, epd_lut_bb);
+    SEND_LUT(LUT_VCOM,  epd_lut_vcom_dc);
+    SEND_LUT(LUT_WW,    epd_lut_ww);
+    SEND_LUT(LUT_BW,    epd_lut_bw);
+    SEND_LUT(LUT_WB,    epd_lut_wb);
+    SEND_LUT(LUT_BB,    epd_lut_bb);
 }
 
 void epd_sceen_clear(void)
@@ -295,17 +353,17 @@ void epd_sceen_clear(void)
     int16_t iWidth = (EPD_SCREEN_WIDTH + 7) >> 3;
     int16_t iHeight =  EPD_SCREEN_HEIGHT;
 
-    epd_send_cmd(0x10);
+    epd_send_cmd(DATA_START_TRANSMISSION_1);
     for (int16_t j = 0; j < iHeight; j++) {
         for (int16_t i = 0; i < iWidth; i++) {
-            epd_send_data(0x00);
+            epd_send_byte(0x00);
         }
     }
 
-    epd_send_cmd(0x13);
+    epd_send_cmd(DATA_START_TRANSMISSION_2);
     for (int16_t j = 0; j < iHeight; j++) {
         for (int16_t i = 0; i < iWidth; i++) {
-            epd_send_data(0xFF);
+            epd_send_byte(0xFF);
         }
     }
 
@@ -318,20 +376,24 @@ static
 void epd_screen_set_window(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight)
 {
     epd_set_partial_refresh_mode();
-    epd_send_cmd(0x91);            //This command makes the display enter partial mode
-    epd_send_cmd(0x90);            //resolution setting
+    epd_send_cmd(PARTIAL_IN);                   //This command makes the display enter partial mode
+    epd_send_cmd(PARTIAL_WINDOW);               //resolution setting
     
+    gpio_put(EPD_DC_PIN, 1);
+    gpio_put(EPD_CS_PIN, 0);
 
-    epd_send_data(iX);                 //x-start
-    epd_send_data(iX + iWidth - 1);    //x-end
+    epd_spi_write_byte(iX);                 //x-start
+    epd_spi_write_byte(iX + iWidth - 1);    //x-end
 
-    epd_send_data(iY >> 8);
-    epd_send_data(iY & 0xFF);          //y-start
+    epd_spi_write_byte(iY >> 8);
+    epd_spi_write_byte(iY & 0xFF);          //y-start
     
     iY += iHeight - 1;
-    epd_send_data(iY);
-    epd_send_data(iY & 0xFF);          //y-end
-    epd_send_data(0x28);
+    epd_spi_write_byte(iY);
+    epd_spi_write_byte(iY & 0xFF);          //y-end
+    epd_spi_write_byte(0x28);
+    
+    gpio_put(EPD_CS_PIN, 1);
 }
 
 void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, const uint8_t *pchBuffer)
@@ -349,8 +411,11 @@ void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, con
 
     epd_screen_set_window(iRotatedX, iRotatedY, iRotatedWidth, iRotatedHeight);
     
-    epd_send_cmd(0x13);
+    epd_send_cmd(DATA_START_TRANSMISSION_1);
 
+    gpio_put(EPD_DC_PIN, 1);
+    gpio_put(EPD_CS_PIN, 0);
+    
     for (int16_t i = 0; i < iRotatedHeight; i++) {
 
         for (int16_t j = 0; j < iRotatedWidth; j+= 8) {
@@ -389,13 +454,15 @@ void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, con
             chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
             pchBlock += iWidth;
 
-            epd_send_data(chData);
+            epd_spi_write_byte(chData);
         
         }
     }
     
-    epd_send_cmd(0x11);
-    epd_send_cmd(0x92);
+    gpio_put(EPD_CS_PIN, 1);
+    
+    epd_send_cmd(DATA_STOP);
+    epd_send_cmd(PARTIAL_OUT);
 
 }
 
@@ -418,10 +485,10 @@ bool epd_flush(void)
     switch (s_chState) {
         case START:
             s_chState++;
-            epd_send_cmd(0x12);
+            epd_send_cmd(DISPLAY_REFRESH);
             //fall-through;
         case WAIT_BUSY:
-            epd_send_cmd(0x71);
+            epd_send_cmd(GET_STATUS);
             if (!(gpio_get(EPD_BUSY_PIN) & 0x01)) {
                 break;
             }

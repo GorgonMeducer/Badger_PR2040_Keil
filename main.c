@@ -101,30 +101,29 @@ typedef struct demo_scene_t {
 
 static demo_scene_t const c_SceneLoaders[] = {
 
-#if 0
-
+#if 1
     {
-        13000,
+        20000,
         scene_mono_loading_loader,
     },
     {
-        5000,
-        scene_mono_histogram_loader,
-    },
-    {
-        5000,
+        10000,
         scene_mono_clock_loader,
     },
     {
-        7000,
+        10000,
+        scene_mono_histogram_loader,
+    },
+    {
+        20000,
         scene_mono_list_loader,
     },
     {
-        15000,
+        20000,
         scene_mono_tracking_list_loader,
     },
     {
-        12000,
+        20000,
         scene_mono_icon_menu_loader,
     }
 
@@ -171,6 +170,8 @@ void before_scene_switching_handler(void *pTarget,
         s_tDemoCTRL.chIndex += dimof(c_SceneLoaders);
     }
     
+    //epd_sceen_clear();
+    
     /* call loader */
     arm_with(const demo_scene_t, &c_SceneLoaders[s_tDemoCTRL.chIndex]) {
         if (_->nLastInMS > 0) {
@@ -197,9 +198,9 @@ static void system_init(void)
     arm_2d_init();
     disp_adapter0_init();
     
-//    arm_2d_helper_full_frame_refresh_mode(
-//                                    &DISP0_ADAPTER.use_as__arm_2d_helper_pfb_t, 
-//                                    true);
+    arm_2d_helper_full_frame_refresh_mode(
+                                    &DISP0_ADAPTER.use_as__arm_2d_helper_pfb_t, 
+                                    true);
 
     arm_2d_scene_player_register_before_switching_event_handler(
             &DISP0_ADAPTER,
@@ -236,7 +237,7 @@ int main(void)
 
     while (true) {
 
-        disp_adapter0_task(2);
+        disp_adapter0_task();
 
         if (!s_tDemoCTRL.bIsTimeout) {
 
