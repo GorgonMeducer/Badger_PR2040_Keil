@@ -39,6 +39,11 @@ void SysTick_Handler(void)
 
 }
 
+void scene_text_reader_loader(void) 
+{
+
+    arm_2d_scene_text_reader_init(&DISP0_ADAPTER);
+}
 
 void scene_mono_loading_loader(void) 
 {
@@ -103,7 +108,7 @@ static demo_scene_t const c_SceneLoaders[] = {
 
 #if 1
     {
-        20000,
+        15000,
         scene_mono_loading_loader,
     },
     {
@@ -115,23 +120,24 @@ static demo_scene_t const c_SceneLoaders[] = {
         scene_mono_histogram_loader,
     },
     {
-        20000,
+        15000,
         scene_mono_list_loader,
     },
     {
-        20000,
-        scene_mono_tracking_list_loader,
+        15000,
+        scene_mono_icon_menu_loader,
     },
     {
-        20000,
-        scene_mono_icon_menu_loader,
-    }
-
+        30000,
+        scene_text_reader_loader,
+    },
+    
 
 #else
     {
         .fnLoader = 
-        scene_mono_clock_loader
+        scene_text_reader_loader,
+        //scene_mono_clock_loader
     },
 #endif
 

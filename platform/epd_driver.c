@@ -411,7 +411,7 @@ void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, con
 
     epd_screen_set_window(iRotatedX, iRotatedY, iRotatedWidth, iRotatedHeight);
     
-    epd_send_cmd(DATA_START_TRANSMISSION_1);
+    epd_send_cmd(DATA_START_TRANSMISSION_2);
 
     gpio_put(EPD_DC_PIN, 1);
     gpio_put(EPD_CS_PIN, 0);
