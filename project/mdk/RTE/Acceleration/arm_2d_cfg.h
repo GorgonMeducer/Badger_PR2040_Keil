@@ -68,7 +68,7 @@ extern "C" {
 // <q>Enable ccca8888(ARGB8888) implicit conversion 
 // <i> This feature is disabled by default to save code size
 #ifndef __ARM_2D_CFG_SUPPORT_CCCA8888_IMPLICIT_CONVERSION__
-#   define __ARM_2D_CFG_SUPPORT_CCCA8888_IMPLICIT_CONVERSION__      1
+#   define __ARM_2D_CFG_SUPPORT_CCCA8888_IMPLICIT_CONVERSION__      0
 #endif
 
 // <q>Improve the Quality of IIR Blur
@@ -171,7 +171,7 @@ extern "C" {
 // <i> This option is used to improve the performance and reduce the application complexity in API selection. Disable this feature allows linker to remove unused APIs further.
 // <i> This option is enabled by default
 #ifndef __ARM_2D_CFG_CALL_NON_OPACITY_VERSION_IMPLICITILY_FOR_255__
-#   define __ARM_2D_CFG_CALL_NON_OPACITY_VERSION_IMPLICITILY_FOR_255__         1
+#   define __ARM_2D_CFG_CALL_NON_OPACITY_VERSION_IMPLICITILY_FOR_255__         0
 #endif
 
 // <q> Optimize the scaler version of transform operations for pointer-like resources
