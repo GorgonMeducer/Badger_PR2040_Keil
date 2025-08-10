@@ -56,7 +56,7 @@ extern void epd_sceen_clear(void);
 
 extern bool epd_screen_is_busy(void);
 
-
+extern bool epd_screen_set_invert_colour_mode(bool bInvert);
 
 
 

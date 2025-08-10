@@ -184,7 +184,7 @@ static void __on_scene_text_reader_frame_start(arm_2d_scene_t *ptScene)
     user_scene_text_reader_t *ptThis = (user_scene_text_reader_t *)ptScene;
     ARM_2D_UNUSED(ptThis);
 
-#if 1
+#if 0
     if (arm_2d_helper_is_time_out(1000, &this.lTimestamp[0])) {
 
         if (++this.iLineNumber >= 200) {
