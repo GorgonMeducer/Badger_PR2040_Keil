@@ -263,6 +263,12 @@ void epd_read_busy(void)
     } while(!(gpio_get(EPD_BUSY_PIN) & 0x01));
 }
 
+bool epd_screen_is_busy(void)
+{
+    epd_send_cmd(GET_STATUS);
+    return !(gpio_get(EPD_BUSY_PIN) & 0x01);
+}
+
 void epd_screen_init(void)
 {
     gpio_set_function(EPD_RST_PIN, GPIO_FUNC_SIO);
@@ -368,8 +374,8 @@ void epd_sceen_clear(void)
     }
 
     epd_set_full_refresh_mode();
-    
-    while(!epd_flush()) __NOP();
+    epd_flush();
+    while(epd_screen_is_busy()) __NOP();
 }
 
 static
@@ -400,7 +406,6 @@ void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, con
 {
     assert((iX & 0x7) == 0);
     assert((iWidth & 0x7) == 0);
-
 
     iX += iWidth - 1;
 
@@ -475,30 +480,7 @@ void Disp0_DrawBitmap(  int16_t x,
     EPD_DrawBitmap(x, y, width, height, bitmap);
 }
 
-bool epd_flush(void)
+void epd_flush(void)
 {
-    static enum {
-        START = 0,
-        WAIT_BUSY,
-    } s_chState = START;
-    
-    switch (s_chState) {
-        case START:
-            s_chState++;
-            epd_send_cmd(DISPLAY_REFRESH);
-            //fall-through;
-        case WAIT_BUSY:
-            epd_send_cmd(GET_STATUS);
-            if (!(gpio_get(EPD_BUSY_PIN) & 0x01)) {
-                break;
-            }
-            s_chState = START;
-            return true;
-
-        default:
-            s_chState = START;
-            break;
-    }
-
-    return false;
+    epd_send_cmd(DISPLAY_REFRESH);
 }

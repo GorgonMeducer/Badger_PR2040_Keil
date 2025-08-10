@@ -50,9 +50,11 @@ extern "C" {
 
 extern void platform_init(void);
 
-extern bool epd_flush(void);
+extern void epd_flush(void);
 
 extern void epd_sceen_clear(void);
+
+extern bool epd_screen_is_busy(void);
 
 
 

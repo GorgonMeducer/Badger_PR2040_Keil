@@ -193,7 +193,7 @@ void before_scene_switching_handler(void *pTarget,
 #if defined(__RTE_ACCELERATION_ARM_2D__) || defined(RTE_Acceleration_Arm_2D)
 static bool __lcd_sync_handler(void *pTarget)
 {
-    return epd_flush();
+    return !epd_screen_is_busy();
 }
 #endif
 
@@ -243,7 +243,12 @@ int main(void)
 
     while (true) {
 
-        disp_adapter0_task();
+        arm_fsm_rt_t tResult = disp_adapter0_task();
+        if (arm_fsm_rt_cpl == tResult) {
+            epd_flush();
+        } else if (ARM_2D_RT_FRAME_SKIPPED) {
+            __NOP();
+        }
 
         if (!s_tDemoCTRL.bIsTimeout) {
 
