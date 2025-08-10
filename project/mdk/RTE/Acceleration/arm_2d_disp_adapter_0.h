@@ -151,7 +151,7 @@ extern "C" {
 // <i> Configure the default navigation layer of this display adapter. 
 // <i> NOTE: Disable the navigation layer will also remove the real-time FPS display.
 #ifndef __DISP0_CFG_NAVIGATION_LAYER_MODE__
-#   define __DISP0_CFG_NAVIGATION_LAYER_MODE__                     1
+#   define __DISP0_CFG_NAVIGATION_LAYER_MODE__                     0
 #endif
 
 // <o>Number of iterations <0-2000>
@@ -305,7 +305,7 @@ extern "C" {
         ({                                                                      \
         static bool ARM_2D_SAFE_NAME(s_bRefreshLCD) = false;                    \
         arm_fsm_rt_t ARM_2D_SAFE_NAME(ret) = arm_fsm_rt_on_going;               \
-        if (!__ARM_VA_NUM_ARGS(__VA_ARGS__)) {                                  \
+        if (!__ARM_VA_NUM_ARGS(__VA_ARGS__) || (__VA_ARGS__) <= 0) {            \
             ARM_2D_SAFE_NAME(ret) = __disp_adapter0_task();                     \
         } else {                                                                \
             if (!ARM_2D_SAFE_NAME(s_bRefreshLCD)) {                             \

@@ -39,6 +39,13 @@ void SysTick_Handler(void)
 
 }
 
+void scene_progress_status_loader(void) 
+{
+    epd_screen_set_invert_colour_mode(false);
+
+    arm_2d_scene_progress_status_init(&DISP0_ADAPTER);
+}
+
 void scene_text_reader_loader(void) 
 {
     epd_screen_set_invert_colour_mode(false);
@@ -109,6 +116,10 @@ static demo_scene_t const c_SceneLoaders[] = {
         scene_mono_histogram_loader,
     },
     {
+        8000,
+        scene_progress_status_loader,
+    },
+    {
         15000,
         scene_mono_list_loader,
     },
@@ -129,7 +140,8 @@ static demo_scene_t const c_SceneLoaders[] = {
 #else
     {
         .fnLoader = 
-        scene_text_reader_loader,
+        scene_progress_status_loader,
+        //scene_text_reader_loader,
         //scene_mono_clock_loader
     },
 #endif
@@ -236,11 +248,9 @@ int main(void)
 
     while (true) {
 
-        arm_fsm_rt_t tResult = disp_adapter0_task();
+        arm_fsm_rt_t tResult = disp_adapter0_task(0);
         if (arm_fsm_rt_cpl == tResult) {
             epd_flush();
-        } else if (ARM_2D_RT_FRAME_SKIPPED) {
-            __NOP();
         }
 
         if (!s_tDemoCTRL.bIsTimeout) {
