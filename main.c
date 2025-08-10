@@ -140,9 +140,7 @@ static demo_scene_t const c_SceneLoaders[] = {
 #else
     {
         .fnLoader = 
-        scene_progress_status_loader,
-        //scene_text_reader_loader,
-        //scene_mono_clock_loader
+        scene_mono_clock_loader
     },
 #endif
 
@@ -180,9 +178,7 @@ void before_scene_switching_handler(void *pTarget,
     } else if (s_tDemoCTRL.chIndex < 0) {
         s_tDemoCTRL.chIndex += dimof(c_SceneLoaders);
     }
-    
-    //epd_sceen_clear();
-    
+
     /* call loader */
     arm_with(const demo_scene_t, &c_SceneLoaders[s_tDemoCTRL.chIndex]) {
         if (_->nLastInMS > 0) {
@@ -195,12 +191,11 @@ void before_scene_switching_handler(void *pTarget,
 }
 
 
-#if defined(__RTE_ACCELERATION_ARM_2D__) || defined(RTE_Acceleration_Arm_2D)
 static bool __lcd_sync_handler(void *pTarget)
 {
     return !epd_screen_is_busy();
 }
-#endif
+
 
 static void system_init(void)
 {
