@@ -165,7 +165,7 @@ static void __on_scene_mono_histogram_frame_start(arm_2d_scene_t *ptScene)
     do {
         /* a simple sin wave generator */
         int32_t nResult;
-        arm_2d_helper_time_cos_slider(0, 1000, 1000, ARM_2D_ANGLE(0.0f), &nResult, &this.lTimestamp[1]);
+        arm_2d_helper_time_cos_slider(0, 1000, 5000, ARM_2D_ANGLE(0.0f), &nResult, &this.lTimestamp[1]);
 
         /* enqueue */
         histogram_enqueue_new_value(ptThis, nResult);
