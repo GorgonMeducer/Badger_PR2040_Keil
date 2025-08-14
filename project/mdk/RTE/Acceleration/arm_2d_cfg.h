@@ -83,6 +83,13 @@ extern "C" {
 #ifndef __ARM_2D_CFG_SUPPORT_TRANSFORM_FOR_NON_A8_FONTS__
 #   define __ARM_2D_CFG_SUPPORT_TRANSFORM_FOR_NON_A8_FONTS__        1
 #endif
+
+
+// <c1> Return frame is SKIPPED when there is nothing to draw
+// <i> When a frame is skipped, return ARM_2D_RT_FRAME_SKIPPED to indicate this.
+#define __ARM_2D_CFG_RETURN_SKIPPED__  
+// </c>
+
 // </h>
 
 // <h>Log and Debug
@@ -164,7 +171,7 @@ extern "C" {
 
 // <c1> Disable Dirty Region Optimization Algorithm permanently in PFB helper service
 // <i> This option is used to remove dirty region optimization in PFB helper service. Warning: Some of the application behaviours would be affected, and the dirty region debug mode is no longer available. Disable the dirty region optimization can reduce memory footprint.
-//#define __ARM_2D_CFG_PFB_DISABLE_DIRTY_REGION_OPTIMIZATION__
+#define __ARM_2D_CFG_PFB_DISABLE_DIRTY_REGION_OPTIMIZATION__
 // </c>
 
 // <q> When opacity is 255, call the non-opacity version of API implicitily
@@ -242,7 +249,7 @@ extern "C" {
 // <i> Enable this mode to reduce the benchmark memory footprint (removing background picture etc.)
 // <i> This feature is disabled by default.
 #ifndef __ARM_2D_CFG_BENCHMARK_TINY_MODE__
-#   define __ARM_2D_CFG_BENCHMARK_TINY_MODE__                           0
+#   define __ARM_2D_CFG_BENCHMARK_TINY_MODE__                           1
 #endif
 
 // <q> Enable Stopwatch mode in the Benchmark:Watch-panel

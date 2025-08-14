@@ -124,7 +124,74 @@ enum {
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 static volatile bool s_bInvertColor = false;
+static volatile bool s_bEnableDither = true;
 
+static const uint8_t c_chDitherTable[16][4][4] = {
+    [0] = {0},
+    [1] = { {0, 0, 0, 0},
+            {0, 1, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},},
+    [2] = { {0, 0, 0, 0},
+            {0, 1, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 1},},
+    [3] = { {0, 0, 0, 0},
+            {0, 1, 0, 1},
+            {0, 0, 0, 0},
+            {0, 0, 0, 1},},
+    [4] = { {0, 0, 0, 0},
+            {0, 1, 0, 1},
+            {0, 0, 0, 0},
+            {0, 1, 0, 1},},
+
+    [5] = { {0, 0, 0, 0},
+            {0, 1, 0, 1},
+            {0, 0, 1, 0},
+            {0, 1, 0, 1},},
+    [6] = { {1, 0, 0, 0},
+            {0, 1, 0, 1},
+            {0, 0, 1, 0},
+            {0, 1, 0, 1},},
+    [7] = { {1, 0, 1, 0},
+            {0, 1, 0, 1},
+            {0, 0, 1, 0},
+            {0, 1, 0, 1},},
+    [8] = { {1, 0, 1, 0},
+            {0, 1, 0, 1},
+            {1, 0, 1, 0},
+            {0, 1, 0, 1},},
+
+    [9] = { {1, 1, 1, 0},
+            {0, 1, 0, 1},
+            {1, 0, 1, 0},
+            {0, 1, 0, 1},},
+    [10] = {{1, 1, 1, 0},
+            {0, 1, 0, 1},
+            {1, 0, 1, 1},
+            {0, 1, 0, 1},},
+    [11] = {{1, 1, 1, 1},
+            {0, 1, 0, 1},
+            {1, 0, 1, 1},
+            {0, 1, 0, 1},},
+    [12] = {{1, 1, 1, 1},
+            {0, 1, 0, 1},
+            {1, 1, 1, 1},
+            {0, 1, 0, 1},},
+
+    [13] = {{1, 1, 1, 1},
+            {1, 1, 0, 1},
+            {1, 1, 1, 1},
+            {0, 1, 0, 1},},
+    [14] = {{1, 1, 1, 1},
+            {1, 1, 0, 1},
+            {1, 1, 1, 1},
+            {0, 1, 1, 1},},
+    [15] = {{1, 1, 1, 1},
+            {1, 1, 1, 1},
+            {1, 1, 1, 1},
+            {1, 1, 1, 1},},
+};
 /*============================ PROTOTYPES ====================================*/
 /*============================ IMPLEMENTATION ================================*/
 
@@ -144,6 +211,17 @@ bool epd_screen_set_invert_colour_mode(bool bInvert)
     __IRQ_SAFE {
         bOldSetting = s_bInvertColor;
         s_bInvertColor = bInvert;
+    }
+    
+    return bOldSetting;
+}
+
+bool epd_screen_set_dither_mode(bool bEnable)
+{
+    bool bOldSetting = false;
+    __IRQ_SAFE {
+        bOldSetting = s_bEnableDither;
+        s_bEnableDither = bEnable;
     }
     
     return bOldSetting;
@@ -423,6 +501,15 @@ void epd_screen_set_window(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeig
 
 }
 
+__STATIC_INLINE
+uint8_t __epd_dither(uint8_t chGray8, int16_t iX, int16_t iY)
+{
+    iX &= 0x03;
+    iY &= 0x03;
+    
+    return c_chDitherTable[chGray8 >> 4][iY][iX];
+}
+
 void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, const uint8_t *pchBuffer)
 {
     assert((iX & 0x7) == 0);
@@ -441,50 +528,99 @@ void EPD_DrawBitmap(int16_t iX, int16_t iY, int16_t iWidth, int16_t iHeight, con
 
     gpio_put(EPD_DC_PIN, 1);
     gpio_put(EPD_CS_PIN, 0);
-    
-    for (int16_t i = 0; i < iRotatedHeight; i++) {
 
-        for (int16_t j = 0; j < iRotatedWidth; j+= 8) {
-            uint8_t chData = 0;
+    if (s_bEnableDither) {
+        for (int16_t i = 0; i < iRotatedHeight; i++) {
 
-            const uint8_t *pchBlock = &pchBuffer[iWidth - i - 1 + j * iWidth];
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
-            chData <<= 1;
-            
-            chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
-            pchBlock += iWidth;
+            for (int16_t j = 0; j < iRotatedWidth;) {
+                uint8_t chData = 0;
 
-            if (s_bInvertColor) { 
-                chData = ~chData; 
+                const uint8_t *pchBlock = &pchBuffer[iWidth - i - 1 + j * iWidth];
+
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= __epd_dither(*pchBlock, j++, i);
+                pchBlock += iWidth;
+
+                if (s_bInvertColor) { 
+                    chData = ~chData; 
+                }
+                epd_spi_write_byte(chData);
+            
             }
-            epd_spi_write_byte(chData);
-        
+        }
+    } else {
+    
+        for (int16_t i = 0; i < iRotatedHeight; i++) {
+
+            for (int16_t j = 0; j < iRotatedWidth; j+= 8) {
+                uint8_t chData = 0;
+
+                const uint8_t *pchBlock = &pchBuffer[iWidth - i - 1 + j * iWidth];
+
+                chData |=  *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+                chData <<= 1;
+                
+                chData |= *pchBlock >= 0x80 ? 0x01 : 0x00;
+                pchBlock += iWidth;
+
+                if (s_bInvertColor) { 
+                    chData = ~chData; 
+                }
+                epd_spi_write_byte(chData);
+            
+            }
         }
     }
     

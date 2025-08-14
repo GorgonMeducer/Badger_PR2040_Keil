@@ -102,7 +102,7 @@ extern "C" {
 // <o>Height of the PFB block
 // <i> The height of your PFB block size used in disp0
 #ifndef __DISP0_CFG_PFB_BLOCK_HEIGHT__
-#   define __DISP0_CFG_PFB_BLOCK_HEIGHT__                          32
+#   define __DISP0_CFG_PFB_BLOCK_HEIGHT__                          16
 #endif
 
 // <o>Width Alignment of generated PFBs
@@ -130,13 +130,13 @@ extern "C" {
 //     <7=>   128 pixel
 // <i> Make sure the y and height of the PFB is always aligned to 2^n pixels
 #ifndef __DISP0_CFG_PFB_PIXEL_ALIGN_HEIGHT__
-#   define __DISP0_CFG_PFB_PIXEL_ALIGN_HEIGHT__                    3
+#   define __DISP0_CFG_PFB_PIXEL_ALIGN_HEIGHT__                    0
 #endif
 
 // <o>PFB Block Count <1-65535>
 // <i> The number of blocks in the PFB pool.
 #ifndef __DISP0_CFG_PFB_HEAP_SIZE__
-#   define __DISP0_CFG_PFB_HEAP_SIZE__                             1
+#   define __DISP0_CFG_PFB_HEAP_SIZE__                             2
 #endif
 
 // </h>
@@ -201,7 +201,7 @@ extern "C" {
 // <q> Enable Dirty Region Optimization Service
 // <i> Optimize dirty regions to avoid fresh overlapped areas
 #ifndef __DISP0_CFG_OPTIMIZE_DIRTY_REGIONS__
-#   define __DISP0_CFG_OPTIMIZE_DIRTY_REGIONS__                    1
+#   define __DISP0_CFG_OPTIMIZE_DIRTY_REGIONS__                    0
 #endif
 
 // <o> Dirty Region Pool Size <4-255>
@@ -305,7 +305,7 @@ extern "C" {
         ({                                                                      \
         static bool ARM_2D_SAFE_NAME(s_bRefreshLCD) = false;                    \
         arm_fsm_rt_t ARM_2D_SAFE_NAME(ret) = arm_fsm_rt_on_going;               \
-        if (!__ARM_VA_NUM_ARGS(__VA_ARGS__) || (__VA_ARGS__) <= 0) {            \
+        if (((0,##__VA_ARGS__) <= 0)) {                                         \
             ARM_2D_SAFE_NAME(ret) = __disp_adapter0_task();                     \
         } else {                                                                \
             if (!ARM_2D_SAFE_NAME(s_bRefreshLCD)) {                             \

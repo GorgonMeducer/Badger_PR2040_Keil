@@ -42,13 +42,31 @@ void SysTick_Handler(void)
 void scene_progress_status_loader(void) 
 {
     epd_screen_set_invert_colour_mode(false);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_progress_status_init(&DISP0_ADAPTER);
+}
+
+void scene_rickrolling_loader(void) 
+{
+    epd_screen_set_invert_colour_mode(false);
+    epd_screen_set_dither_mode(true);
+
+    arm_2d_scene_rickrolling_init(&DISP0_ADAPTER);
+}
+
+void scene_qrcode_loader(void) 
+{
+    epd_screen_set_invert_colour_mode(false);
+    epd_screen_set_dither_mode(false);
+
+    arm_2d_scene_qrcode_init(&DISP0_ADAPTER);
 }
 
 void scene_text_reader_loader(void) 
 {
     epd_screen_set_invert_colour_mode(false);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_text_reader_init(&DISP0_ADAPTER);
 }
@@ -56,6 +74,7 @@ void scene_text_reader_loader(void)
 void scene_mono_loading_loader(void) 
 {
     epd_screen_set_invert_colour_mode(true);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_mono_loading_init(&DISP0_ADAPTER);
 }
@@ -63,6 +82,7 @@ void scene_mono_loading_loader(void)
 void scene_mono_histogram_loader(void) 
 {
     epd_screen_set_invert_colour_mode(true);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_mono_histogram_init(&DISP0_ADAPTER);
 }
@@ -70,6 +90,7 @@ void scene_mono_histogram_loader(void)
 void scene_mono_clock_loader(void) 
 {
     epd_screen_set_invert_colour_mode(true);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_mono_clock_init(&DISP0_ADAPTER);
 }
@@ -77,6 +98,7 @@ void scene_mono_clock_loader(void)
 void scene_mono_list_loader(void) 
 {
     epd_screen_set_invert_colour_mode(true);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_mono_list_init(&DISP0_ADAPTER);
 }
@@ -84,6 +106,7 @@ void scene_mono_list_loader(void)
 void scene_mono_tracking_list_loader(void) 
 {
     epd_screen_set_invert_colour_mode(true);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_mono_tracking_list_init(&DISP0_ADAPTER);
 }
@@ -91,6 +114,7 @@ void scene_mono_tracking_list_loader(void)
 void scene_mono_icon_menu_loader(void) 
 {
     epd_screen_set_invert_colour_mode(true);
+    epd_screen_set_dither_mode(false);
 
     arm_2d_scene_mono_icon_menu_init(&DISP0_ADAPTER);
 }
@@ -106,6 +130,10 @@ static demo_scene_t const c_SceneLoaders[] = {
     {
         15000,
         scene_mono_loading_loader,
+    },
+    {
+        5000,
+        scene_qrcode_loader,
     },
     {
         10000,
@@ -135,12 +163,18 @@ static demo_scene_t const c_SceneLoaders[] = {
         30000,
         scene_text_reader_loader,
     },
+    {
+        20000,
+        scene_rickrolling_loader,
+    },
     
 
 #else
     {
         .fnLoader = 
-        scene_mono_clock_loader
+        scene_rickrolling_loader,
+        //scene_qrcode_loader,
+        //scene_mono_clock_loader
     },
 #endif
 

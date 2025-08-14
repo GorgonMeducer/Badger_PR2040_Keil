@@ -952,6 +952,20 @@
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </component>
+      <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="QRCode" Cvendor="ARM" Cversion="1.0.0" condition="Arm-2D-Demos" ymlID="Acceleration:Arm-2D Demos:QRCode">
+        <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="Showing Animation with TJpgDec" Cvendor="ARM" Cversion="1.0.2" condition="Arm-2D-Demo-TJpgDec-Loader" ymlID="Acceleration:Arm-2D Demos:Showing Animation with TJpgDec">
+        <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
+      </component>
       <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="Text Reader" Cvendor="ARM" Cversion="2.0.0" condition="Arm-2D-Demos" ymlID="Acceleration:Arm-2D Demos:Text Reader">
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
         <targetInfos>
@@ -980,14 +994,14 @@
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </component>
-      <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="Display Adapter" Cvendor="ARM" Cversion="3.5.0" condition="Arm-2D-Displayer-Adapter" maxInstances="8" ymlID="Acceleration:Arm-2D Helper:Display Adapter">
+      <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="Display Adapter" Cvendor="ARM" Cversion="3.5.1" condition="Arm-2D-Displayer-Adapter" maxInstances="8" ymlID="Acceleration:Arm-2D Helper:Display Adapter">
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
         <targetInfos>
           <targetInfo name="AC6-DebugInSRAM"/>
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </component>
-      <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="PFB" Cvendor="ARM" Cversion="2.8.4" condition="Arm-2D-CORE" ymlID="Acceleration:Arm-2D Helper:PFB">
+      <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="PFB" Cvendor="ARM" Cversion="2.8.7" condition="Arm-2D-CORE" ymlID="Acceleration:Arm-2D Helper:PFB">
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
         <targetInfos>
           <targetInfo name="AC6-DebugInSRAM"/>
@@ -1106,10 +1120,13 @@
         <targetInfos/>
       </file>
       <file attr="config" category="other" name="examples\demos\Rickrolling75.jpg" version="1.0.2">
-        <instance index="0" removed="1">RTE\Acceleration\Rickrolling75.jpg</instance>
+        <instance index="0">RTE\Acceleration\Rickrolling75.jpg</instance>
         <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="Showing Animation with TJpgDec" Cvendor="ARM" Cversion="1.0.2" condition="Arm-2D-Demo-TJpgDec-Loader"/>
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
       </file>
       <file attr="config" category="sourceC" name="examples\demos\monochrome\SquareDigits.c" version="1.0.3">
         <instance index="0">RTE\Acceleration\SquareDigits.c</instance>
@@ -1147,7 +1164,7 @@
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </file>
-      <file attr="config" category="preIncludeGlobal" name="Library\Include\template\arm_2d_cfg.h" version="1.5.7">
+      <file attr="config" category="preIncludeGlobal" name="Library\Include\template\arm_2d_cfg.h" version="1.5.8">
         <instance index="0">RTE\Acceleration\arm_2d_cfg.h</instance>
         <component Cclass="Acceleration" Cgroup="Arm-2D" Csub="Core" Cvendor="ARM" Cversion="1.2.4-dev" condition="CMSIS-DSP"/>
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
@@ -1156,18 +1173,18 @@
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </file>
-      <file attr="config" category="sourceC" name="Helper\template\arm_2d_disp_adapter.c" version="3.5.0">
+      <file attr="config" category="sourceC" name="Helper\template\arm_2d_disp_adapter.c" version="3.5.1">
         <instance index="0">RTE\Acceleration\arm_2d_disp_adapter_0.c</instance>
-        <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="Display Adapter" Cvendor="ARM" Cversion="3.5.0" condition="Arm-2D-Displayer-Adapter" maxInstances="8"/>
+        <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="Display Adapter" Cvendor="ARM" Cversion="3.5.1" condition="Arm-2D-Displayer-Adapter" maxInstances="8"/>
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
         <targetInfos>
           <targetInfo name="AC6-DebugInSRAM"/>
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </file>
-      <file attr="config" category="header" name="Helper\template\arm_2d_disp_adapter.h" version="3.5.0">
+      <file attr="config" category="header" name="Helper\template\arm_2d_disp_adapter.h" version="3.5.1">
         <instance index="0">RTE\Acceleration\arm_2d_disp_adapter_0.h</instance>
-        <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="Display Adapter" Cvendor="ARM" Cversion="3.5.0" condition="Arm-2D-Displayer-Adapter" maxInstances="8"/>
+        <component Cclass="Acceleration" Cgroup="Arm-2D Helper" Csub="Display Adapter" Cvendor="ARM" Cversion="3.5.1" condition="Arm-2D-Displayer-Adapter" maxInstances="8"/>
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
         <targetInfos>
           <targetInfo name="AC6-DebugInSRAM"/>
@@ -1348,17 +1365,41 @@
           <targetInfo name="AC6-flash"/>
         </targetInfos>
       </file>
+      <file attr="config" category="sourceC" name="examples\demos\arm_2d_scene_qrcode.c" version="1.0.0">
+        <instance index="0">RTE\Acceleration\arm_2d_scene_qrcode.c</instance>
+        <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="QRCode" Cvendor="ARM" Cversion="1.0.0" condition="Arm-2D-Demos"/>
+        <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
+      </file>
+      <file attr="config" category="header" name="examples\demos\arm_2d_scene_qrcode.h" version="1.0.0">
+        <instance index="0">RTE\Acceleration\arm_2d_scene_qrcode.h</instance>
+        <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="QRCode" Cvendor="ARM" Cversion="1.0.0" condition="Arm-2D-Demos"/>
+        <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
+      </file>
       <file attr="config" category="sourceC" name="examples\demos\arm_2d_scene_rickrolling.c" version="1.0.2">
-        <instance index="0" removed="1">RTE\Acceleration\arm_2d_scene_rickrolling.c</instance>
+        <instance index="0">RTE\Acceleration\arm_2d_scene_rickrolling.c</instance>
         <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="Showing Animation with TJpgDec" Cvendor="ARM" Cversion="1.0.2" condition="Arm-2D-Demo-TJpgDec-Loader"/>
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
       </file>
       <file attr="config" category="header" name="examples\demos\arm_2d_scene_rickrolling.h" version="1.0.2">
-        <instance index="0" removed="1">RTE\Acceleration\arm_2d_scene_rickrolling.h</instance>
+        <instance index="0">RTE\Acceleration\arm_2d_scene_rickrolling.h</instance>
         <component Cclass="Acceleration" Cgroup="Arm-2D Demos" Csub="Showing Animation with TJpgDec" Cvendor="ARM" Cversion="1.0.2" condition="Arm-2D-Demo-TJpgDec-Loader"/>
         <package name="Arm-2D" schemaVersion="1.7.37" url="https://www.keil.com/pack/" vendor="ARM" version="9.9.99"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="AC6-DebugInSRAM"/>
+          <targetInfo name="AC6-flash"/>
+        </targetInfos>
       </file>
       <file attr="config" category="sourceC" name="examples\demos\arm_2d_scene_text_reader.c" version="2.0.0">
         <instance index="0">RTE\Acceleration\arm_2d_scene_text_reader.c</instance>
